@@ -3,6 +3,8 @@ Run scoop-installed-msys **Mintty** **F**rom **P**ower**S**hell, with one-off co
 
 ## Installation
 
+First, go get `scoop` from [http://scoop.sh/](http://scoop.sh/)  
+
 #### Stable version:
 
 ```
