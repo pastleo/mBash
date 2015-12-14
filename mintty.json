@@ -1,0 +1,9 @@
+{
+    "version": "0.1",
+    "url": "https://github.com/chgu82837/MinttyFPS/archive/master.zip",
+    "extract_dir": "MinttyFPS",
+    "bin": "mintty.ps1",
+    "env_add_path": "shim",
+    "depends": ["msys"],
+    "license": "MIT",
+}
