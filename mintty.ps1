@@ -5,7 +5,7 @@ Function Help
     echo "Usage:"
     echo "   $ThisPS1 # run bash in mintty directly"
     echo "   $ThisPS1 <bin> [parameters] # run bin in mintty"
-    echo "   $ThisPS1 --add|-a <bin> [parameters] # add a ps1 script to wrap bin run with mintty"
+    echo "   $ThisPS1 --add|-a <name> <bin> [parameters] # add a ps1 shortcut to run bin with mintty"
     echo "   $ThisPS1 --rmove|-r <bin> # remove a ps1 script"
     echo "   $ThisPS1 --help|-h # show this help"
 }
@@ -29,25 +29,24 @@ ElseIf ($args[0] -eq "-a" -Or $args[0] -eq "--add")
         New-Item -ItemType directory -Path $SHIMDIR | Out-Null
     }
 
-    If ($args.count -lt 2)
+    If ($args.count -lt 3)
     {
         Help
         exit 255
     }
 
-    if(Test-Path $args[1]){
-        $bin = $(Resolve-Path $args[1])
+    if(Test-Path $args[2]){
+        $bin = $(Resolve-Path $args[2])
         $name = [io.path]::GetFileNameWithoutExtension($bin)
     }
     Else
     {
-        $bin = $args[1]
-        $name = $args[1]
+        $bin = $args[2]
     }
 
-    If ($args.count -ge 3)
+    If ($args.count -ge 4)
     {
-        $param = $args[2 .. ($args.count - 1)]
+        $param = $args[3 .. ($args.count - 1)]
         $outputPS1_content = "$bin $param"
     }
     Else
@@ -55,6 +54,7 @@ ElseIf ($args[0] -eq "-a" -Or $args[0] -eq "--add")
         $outputPS1_content = "$bin" + ' "$args"'
     }
 
+    $name = $args[1]
     $minttyPS1 = $(Resolve-Path $PSCommandPath)
     $outputPS1_path = "$SHIMDIR\$name" + ".ps1"
     echo "$minttyPS1 $outputPS1_content" | Out-File $outputPS1_path utf8
