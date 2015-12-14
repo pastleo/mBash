@@ -86,7 +86,7 @@ If ($msys_path)
     $env:_START_WD = $(pwd)
     $msys_bin_path = "$(Resolve-Path $(Split-Path $msys_path))\bin"
     $oriPath = $env:PATH
-    add-Path "$msys_bin_path"
+    $env:PATH = "$msys_bin_path;" + $env:PATH
     $env:MSYSTEM = "MINGW32"
     If ($args.count -ge 1)
     {
