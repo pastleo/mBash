@@ -7,6 +7,14 @@ Function Help
     echo "   $ThisPS1 <bin> [parameters] # run bin in mintty"
     echo "   $ThisPS1 --add|-a <bin> [parameters] # add a ps1 script to wrap bin run with mintty"
     echo "   $ThisPS1 --rmove|-r <bin> # remove a ps1 script"
+    echo "   $ThisPS1 --help|-h # show this help"
+}
+
+Function CygPath
+{
+    $r = [Regex]::Replace($args[0], '^(\w):', { param($m) '/' + $m.Groups[1].Value.ToLower() })
+    $r = [Regex]::Replace($r, '\\+', '/')
+    return $r
 }
 
 $SHIMDIR = "$PSScriptRoot\shim"
@@ -18,7 +26,7 @@ If ($args[0] -eq "-h" -Or $args[0] -eq "--help")
 ElseIf ($args[0] -eq "-a" -Or $args[0] -eq "--add")
 {
     if(!(Test-Path -Path $SHIMDIR )){
-        New-Item -ItemType directory -Path $SHIMDIR
+        New-Item -ItemType directory -Path $SHIMDIR | Out-Null
     }
 
     If ($args.count -lt 2)
@@ -37,20 +45,19 @@ ElseIf ($args[0] -eq "-a" -Or $args[0] -eq "--add")
         $name = $args[1]
     }
 
-    $minttyPS1 = $(Resolve-Path $PSCommandPath)
     If ($args.count -ge 3)
     {
         $param = $args[2 .. ($args.count - 1)]
-        $outputPS1_content = "$minttyPS1 $bin $param"
+        $outputPS1_content = "$bin $param"
     }
     Else
     {
-        $outputPS1_content = "$minttyPS1 $bin" + ' "$args"'
+        $outputPS1_content = "$bin" + ' "$args"'
     }
 
+    $minttyPS1 = $(Resolve-Path $PSCommandPath)
     $outputPS1_path = "$SHIMDIR\$name" + ".ps1"
-
-    echo $outputPS1_content | Out-File $outputPS1_path utf8
+    echo "$minttyPS1 $outputPS1_content" | Out-File $outputPS1_path utf8
     echo "$outputPS1_path has been created!"
     exit
 }
@@ -90,7 +97,25 @@ If ($msys_path)
     $env:MSYSTEM = "MINGW32"
     If ($args.count -ge 1)
     {
-        $command = "/bin/bash -c '$args; echo Exited by " + '$?' + ". Press enter to continue; read;'"
+        if(Test-Path $args[0]){
+            $bin = CygPath $(Resolve-Path $args[0])
+        }
+        Else
+        {
+            $bin = $args[0]
+        }
+
+        If ($args.count -ge 2)
+        {
+            $param = $args[1 .. ($args.count - 1)]
+            $bash_command = "$bin $param"
+        }
+        Else
+        {
+            $bash_command = "$bin"
+        }
+
+        $command = "/bin/bash -c '$bash_command; echo Exited by " + '$?' + ". Press enter to continue; read;'"
     }
     Else
     {
