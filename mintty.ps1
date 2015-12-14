@@ -6,7 +6,7 @@ Function Help
     echo "   $ThisPS1 # run bash in mintty directly"
     echo "   $ThisPS1 <bin> [parameters] # run bin in mintty"
     echo "   $ThisPS1 --add|-a <name> <bin> [parameters] # add a ps1 shortcut to run bin with mintty"
-    echo "   $ThisPS1 --rmove|-r <bin> # remove a ps1 script"
+    echo "   $ThisPS1 --rmove|-r <name> # remove a ps1 script"
     echo "   $ThisPS1 --help|-h # show this help"
 }
 
@@ -69,13 +69,7 @@ ElseIf ($args[0] -eq "-r" -Or $args[0] -eq "--remove")
         exit 255
     }
 
-    if(Test-Path $args[1]){
-        $name = [io.path]::GetFileNameWithoutExtension($(Resolve-Path $args[1]))
-    }
-    Else
-    {
-        $name = $args[1]
-    }
+    $name = $args[1]
     $outputPS1_path = "$SHIMDIR\$name" + ".ps1"
     Remove-Item $outputPS1_path
     echo "$outputPS1_path has been removed!"
