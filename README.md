@@ -1,5 +1,5 @@
 # mBash
-Run scoop-installed-msys **Mintty** **F**rom **P**ower**S**hell, with one-off command support and shortcut adding / removing and even shim backup, restore and link.
+Run scoop-installed-msys bash from powershell, opening a mintty window or runs on original window. with one-off command support and shortcut adding / removing and even shim backup, restore and link.
 
 ## Installation
 
