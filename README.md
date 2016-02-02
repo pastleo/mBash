@@ -8,5 +8,5 @@ First, go get `scoop` from [http://scoop.sh/](http://scoop.sh/)
 #### Current master version:
 
 ```
-scoop install https://github.com/chgu82837/mBash/raw/master/mintty.ps1
+scoop install https://raw.githubusercontent.com/chgu82837/mBash/master/mBash.json
 ```
