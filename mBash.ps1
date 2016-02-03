@@ -198,7 +198,8 @@ Function Backup
     }
 
     cp -r $ShimDir $target
-    echo "Copy $ShimDir => $target done!"
+    If($?) { echo "Copy $ShimDir => $target done!" }
+    Else { $Ret = $false }
 }
 
 Function Restore
@@ -215,7 +216,8 @@ Function Restore
     BakShimDir
 
     cp -r $target $ShimDir
-    echo "Copy $target => $ShimDir done!"
+    If($?) { echo "Copy $target => $ShimDir done!" }
+    Else { $Ret = $false }
 }
 
 Function Link
@@ -231,8 +233,9 @@ Function Link
 
     BakShimDir
 
-    sudo cmd /c mklink /J $target $ShimDir
-    echo "Copy $target => $ShimDir done!"
+    sudo cmd /c mklink /J $ShimDir $target
+    If($?) { echo "Link $ShimDir => $target done!" }
+    Else { $Ret = $false }
 }
 
 Function Main
