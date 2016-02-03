@@ -18,6 +18,20 @@ Function CygPath
     return $r
 }
 
+Function MkShimDir
+{
+    if(!(Test-Path -Path $ShimDir )){
+        New-Item -ItemType directory -Path $ShimDir | Out-Null
+    }
+}
+
+Function BakShimDir
+{
+    if(Test-Path -Path $ShimDir){
+        mv $ShimDir "${ShimDir}_bak_$(Get-Date -format "yyyyMMddHHmm")"
+    }
+}
+
 Function Help
 {
     echo "Usage:"
@@ -106,9 +120,7 @@ Function RunMbash($mintty, $cygpath)
 
 Function Add($mintty, $cygpath)
 {
-    if(!(Test-Path -Path $ShimDir )){
-        New-Item -ItemType directory -Path $ShimDir | Out-Null
-    }
+    MkShimDir
 
     If ($params.count -lt 2)
     {
@@ -157,8 +169,14 @@ Function Remove
 
     $name = $params[0]
     $outputPS1_path = "$ShimDir\$name" + ".ps1"
-    Remove-Item $outputPS1_path
-    echo "$outputPS1_path has been removed!"
+    If(Test-Path $outputPS1_path){
+        Remove-Item $outputPS1_path
+        echo "$outputPS1_path has been removed!"
+    }
+    Else{
+        echo "$outputPS1_path not exists!"
+        $Ret = $false
+    }
 }
 
 Function Backup
@@ -171,6 +189,8 @@ Function Backup
     {
         $target = "mBash-shim"
     }
+    
+    MkShimDir
     
     If (Test-Path $target)
     {
@@ -192,7 +212,7 @@ Function Restore
         $target = $(pwd)
     }
     
-    mv $ShimDir "${ShimDir}_bak_$(Get-Date -format "yyyyMMddHHmm")"
+    BakShimDir
 
     cp -r $target $ShimDir
     echo "Copy $target => $ShimDir done!"
@@ -208,8 +228,8 @@ Function Link
     {
         $target = $(pwd)
     }
-    
-    mv $ShimDir "${ShimDir}_bak_$(Get-Date -format "yyyyMMddHHmm")"
+
+    BakShimDir
 
     sudo cmd /c mklink /J $target $ShimDir
     echo "Copy $target => $ShimDir done!"
